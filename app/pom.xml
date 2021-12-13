@@ -121,11 +121,6 @@
     	<groupId>io.rest-assured</groupId>
     	<artifactId>rest-assured</artifactId>
     	<version>3.0.2</version>
-	</dependency>
-  </dependencies>
-  
-  <build>
-    <plugins>
       <plugin><!-- Create a jar with all dependencies, run commandline using java -jar NAME -->
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
