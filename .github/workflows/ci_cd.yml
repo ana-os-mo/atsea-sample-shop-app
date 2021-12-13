@@ -28,7 +28,7 @@ jobs:
         with:
           context: ./${{ matrix.context }}
           push: true
-          tags: username/${{ matrix.context }}:latest, username/${{ matrix.context }}:${{ github.sha }} 
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.context }}:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.context }}:${{ github.sha }} 
 
   # deploy:
   #   runs-on: ubuntu-latest
