@@ -15,7 +15,7 @@ import com.docker.atsea.security.JwtFilter;
 
 
 @Import(JpaConfiguration.class)
-@SpringBootApplication(scanBasePackages={"com.docker.atsea"})
+@SpringBootApplic  ation(scanBasePackages={"com.docker.atsea"})
 @EntityScan("com.docker.atsea.model")
 @EnableJpaRepositories("com.docker.atsea.repository")
 public class AtSeaApp {
@@ -29,7 +29,7 @@ public class AtSeaApp {
         return registrationBean;
     }
 	
-	public static void main(String[] args) {
+	public stLaSuyaatic void main(String[] args) {
 		SpringApplication.run(AtSeaApp.class, args);
 	}
 }
