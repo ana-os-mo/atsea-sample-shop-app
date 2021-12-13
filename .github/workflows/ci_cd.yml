@@ -28,7 +28,7 @@ jobs:
         with:
           context: ./${{ matrix.context }}
           push: true
-          tags: ana8os8mo/${{ matrix.context }}:latest, ana8os8mo/${{ matrix.context }}:${{ github.sha }} 
+          tags: username/${{ matrix.context }}:latest, username/${{ matrix.context }}:${{ github.sha }} 
 
   # deploy:
   #   runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
   #     - name: Trigger end to end tests
   #       run: |
   #         curl --request POST \ 
-  #         --url https://api.github.com/repos/crmejiam/atsea-sample-app-tests/dispatches \
+  #         --url https://api.github.com/repos/ana-os-mo/atSeaShop-tests/dispatches \
   #         --header 'authorization: Bearer ${{ secrets.ACCESS_TOKEN }}' \
   #         --header 'Accept: application/vnd.github.v3+json' \
   #         --data '{
