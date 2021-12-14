@@ -30,48 +30,51 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.context }}:latest, ${{ secrets.DOCKER_HUB_USERNAME }}/${{ matrix.context }}:${{ github.sha }} 
 
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: checkout
-  #       uses: actions/checkout@v2
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
       
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: us-east-2
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
       
-  #     - name: Check if the instance is running
-  #       run: | 
-  #         state=`(aws ec2 describe-instance-status --instance-id ${{ secrets.PYC_INSTANCE_ID }}) | grep -w "running" | wc -l`;
-  #         if [ "$state" -eq 0 ]; then aws ec2 start-instances --instance-ids ${{ secrets.PYC_INSTANCE_ID }}; fi
+      - name: Check if the instance is running
+        run: | 
+          state=`(aws ec2 describe-instance-status --instance-id ${{ secrets.AWS_INSTANCE_ID }}) | grep -w "running" | wc -l`;
+          if [ "$state" -eq 0 ]; then aws ec2 start-instances --instance-ids ${{ secrets.AWS_INSTANCE_ID }}; fi
       
-  #     - name: Transfer files via ssh key
-  #       uses: appleboy/scp-action@master
-  #       with:      
-  #         host: ${{ secrets.HOST }}
-  #         username: ${{ secrets.INSTANCE_USERNAME }}
-  #         key: ${{ secrets.INSTANCE_KEY }}
-  #         source: "./docker-compose.yml, ./devsecrets"
-  #         target: "/home/${{ secrets.INSTANCE_USERNAME }}"
+      - name: Transfer files using ssh key
+        uses: appleboy/scp-action@master
+        with:      
+          host: ${{ secrets.AWS_PUBLIC_DNS }}
+          username: ${{ secrets.AWS_INSTANCE_USERNAME }}
+          key: ${{ secrets.AWS_INSTANCE_KEY }}
+          source: "./docker-compose.yml, ./devsecrets"
+          target: "/home/${{ secrets.AWS_INSTANCE_USERNAME }}"
 
-  #     - name: executing remote ssh commands using key
-  #       uses: appleboy/ssh-action@master
-  #       with:
-  #         host: ${{ secrets.HOST }}
-  #         username: ${{ secrets.INSTANCE_USERNAME }}
-  #         key: ${{ secrets.INSTANCE_KEY }}
-  #         script: |
-  #               docker-compose up -d
-  #     - name: Trigger end to end tests
-  #       run: |
-  #         curl --request POST \ 
-  #         --url https://api.github.com/repos/ana-os-mo/atSeaShop-tests/dispatches \
-  #         --header 'authorization: Bearer ${{ secrets.ACCESS_TOKEN }}' \
-  #         --header 'Accept: application/vnd.github.v3+json' \
-  #         --data '{
-  #           "event_type": "deployed"
-  #           }' \
-  #         --fail
+      - name: executing remote ssh commands using key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_PUBLIC_DNS }}
+          username: ${{ secrets.AWS_INSTANCE_USERNAME }}
+          key: ${{ secrets.AWS_INSTANCE_KEY }}
+          script: |
+                    sudo docker swarm init
+                    sudo docker-compose up -d
+
+      # - name: Trigger end to end tests
+      #   run: |
+      #     curl --request POST \ 
+      #     --url https://api.github.com/repos/ana-os-mo/atSeaShop-tests/dispatches \
+      #     --header 'authorization: Bearer ${{ secrets.REPO_ACCESS_TOKEN }}' \
+      #     --header 'Accept: application/vnd.github.v3+json' \
+      #     --data '{
+      #       "event_type": "deployed"
+      #       }' \
+      #     --fail
