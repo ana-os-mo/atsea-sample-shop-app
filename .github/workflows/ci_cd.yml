@@ -68,13 +68,13 @@ jobs:
                     sudo docker swarm init
                     sudo docker-compose up -d
 
-      # - name: Trigger end to end tests
-      #   run: |
-      #     curl --request POST \ 
-      #     --url https://api.github.com/repos/ana-os-mo/atSeaShop-tests/dispatches \
-      #     --header 'authorization: Bearer ${{ secrets.REPO_ACCESS_TOKEN }}' \
-      #     --header 'Accept: application/vnd.github.v3+json' \
-      #     --data '{
-      #       "event_type": "deployed"
-      #       }' \
-      #     --fail
+      - name: Trigger end to end tests
+        run: |
+          curl --request POST \ 
+          --url https://api.github.com/repos/ana-os-mo/atSeaShop-tests/dispatches \
+          --header 'authorization: Bearer ${{ secrets.REPO_ACCESS_TOKEN }}' \
+          --header 'Accept: application/vnd.github.v3+json' \
+          --data '{
+            "event_type": "deployed"
+            }' \
+          --fail
